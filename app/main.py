@@ -5,7 +5,7 @@ import joblib
 import pandas as pd
 import tempfile
 import os
-
+from pathlib import Path
 from app.features import extract_features
 from app.roi_detector import detect_rois
 
@@ -36,9 +36,11 @@ app.add_middleware(
 # MODEL PATHS
 # ============================================================
 
-MODEL_PATH = "models/extra_trees_classifier.pkl"
-SELECTOR_PATH = "models/feature_selector.pkl"
-SCALER_PATH = "models/minmax_scaler.pkl"
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MODEL_PATH = BASE_DIR / "models" / "extra_trees_classifier.pkl"
+SELECTOR_PATH = BASE_DIR / "models" / "feature_selector.pkl"
+SCALER_PATH = BASE_DIR / "models" / "minmax_scaler.pkl"
 
 
 # ============================================================
