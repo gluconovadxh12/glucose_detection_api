@@ -1,7 +1,90 @@
 import cv2
 import numpy as np
 from scipy.stats import skew, kurtosis
-from skimage.feature import graycomatrix, graycoprops
+
+def calculate_glcm_features(gray_32):
+    """
+    Calculate GLCM features using NumPy.
+
+    Matches the original configuration:
+    distance=1, angle=0, levels=32,
+    symmetric=True, normed=True.
+    """
+
+    levels = 32
+
+    # Horizontal pixel pairs: (row, col) and (row, col + 1)
+    left = gray_32[:, :-1].astype(np.int32)
+    right = gray_32[:, 1:].astype(np.int32)
+
+    # Count gray-level pairs
+    pair_indices = left * levels + right
+
+    counts = np.bincount(
+        pair_indices.ravel(),
+        minlength=levels * levels
+    ).reshape(levels, levels).astype(np.float64)
+
+    # Make the matrix symmetric
+    glcm = counts + counts.T
+
+    # Normalize
+    total = glcm.sum()
+
+    if total == 0:
+        return {
+            "glcm_contrast": 0.0,
+            "glcm_dissimilarity": 0.0,
+            "glcm_homogeneity": 0.0,
+            "glcm_energy": 0.0,
+            "glcm_correlation": 1.0
+        }
+
+    glcm /= total
+
+    # Gray-level coordinate matrices
+    i, j = np.indices((levels, levels))
+    difference = i - j
+
+    # GLCM features
+    contrast = np.sum(glcm * (difference ** 2))
+
+    dissimilarity = np.sum(
+        glcm * np.abs(difference)
+    )
+
+    homogeneity = np.sum(
+        glcm / (1.0 + difference ** 2)
+    )
+
+    energy = np.sqrt(np.sum(glcm ** 2))
+
+    # Correlation
+    mean_i = np.sum(i * glcm)
+    mean_j = np.sum(j * glcm)
+
+    std_i = np.sqrt(
+        np.sum(((i - mean_i) ** 2) * glcm)
+    )
+
+    std_j = np.sqrt(
+        np.sum(((j - mean_j) ** 2) * glcm)
+    )
+
+    if std_i > 0 and std_j > 0:
+        correlation = np.sum(
+            (i - mean_i) * (j - mean_j) * glcm
+        ) / (std_i * std_j)
+    else:
+        correlation = 1.0
+
+    return {
+        "glcm_contrast": contrast,
+        "glcm_dissimilarity": dissimilarity,
+        "glcm_homogeneity": homogeneity,
+        "glcm_energy": energy,
+        "glcm_correlation": correlation
+    }
 
 
 def extract_features(image_path):
@@ -175,38 +258,8 @@ def extract_features(image_path):
 
     gray_32 = (gray / 8).astype(np.uint8)
 
-    glcm = graycomatrix(
-        gray_32,
-        distances=[1],
-        angles=[0],
-        levels=32,
-        symmetric=True,
-        normed=True
-    )
+    glcm_features = calculate_glcm_features(gray_32)
 
-    features["glcm_contrast"] = graycoprops(
-        glcm,
-        "contrast"
-    )[0, 0]
-
-    features["glcm_dissimilarity"] = graycoprops(
-        glcm,
-        "dissimilarity"
-    )[0, 0]
-
-    features["glcm_homogeneity"] = graycoprops(
-        glcm,
-        "homogeneity"
-    )[0, 0]
-
-    features["glcm_energy"] = graycoprops(
-        glcm,
-        "energy"
-    )[0, 0]
-
-    features["glcm_correlation"] = graycoprops(
-        glcm,
-        "correlation"
-    )[0, 0]
+    features.update(glcm_features)
 
     return features
