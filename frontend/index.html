@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GlucoSense AI smartphone glucose detection prototype">
+  <title>GlucoSense AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="GlucoSense AI home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span>
+          <strong>GlucoSense <em>AI</em></strong>
+          <small>AI-Powered Smartphone Glucose Detection</small>
+        </span>
+      </a>
+      <div class="header-status"><span class="status-dot"></span> Research prototype</div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="intro-row">
+      <div>
+        <p class="eyebrow">COLORIMETRIC ANALYSIS / 01</p>
+        <h1>Read the signal<br><span>inside the image.</span></h1>
+        <p class="intro-copy">Upload a smartphone image of the test strip and inspect four independent chamber readings powered by the GlucoSense pipeline.</p>
+      </div>
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="orbit-core"><span></span></div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Glucose detection workspace">
+      <div class="panel upload-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">INPUT IMAGE</p>
+            <h2>Prepare a sample</h2>
+          </div>
+          <span class="step-number">01</span>
+        </div>
+
+        <label class="drop-zone" id="dropZone" for="imageInput">
+          <input id="imageInput" type="file" accept="image/*">
+          <span class="upload-icon" aria-hidden="true"><span></span></span>
+          <strong>Drop a sample image here</strong>
+          <span>PNG, JPG, or JPEG up to 25 MB</span>
+          <button class="button button-secondary" type="button" id="chooseButton">Choose Image</button>
+        </label>
+
+        <div class="selected-file" id="selectedFile" hidden>
+          <span class="file-badge">IMG</span>
+          <div>
+            <strong id="fileName">No file selected</strong>
+            <span id="fileMeta">Ready for analysis</span>
+          </div>
+          <button class="icon-button" type="button" id="removeButton" aria-label="Remove selected image" title="Remove image">&times;</button>
+        </div>
+
+        <div class="preview-wrap" id="previewWrap" hidden>
+          <div class="preview-label"><span>Preview</span><span id="previewDimensions"></span></div>
+          <img id="imagePreview" alt="Selected glucose test image preview">
+        </div>
+
+        <button class="button button-primary detect-button" id="detectButton" type="button" disabled>
+          <span class="button-icon" aria-hidden="true">&#8594;</span>
+          Detect Glucose
+        </button>
+      </div>
+
+      <div class="panel results-panel" id="resultsPanel" hidden>
+        <div class="panel-heading results-heading">
+          <div>
+            <p class="section-kicker">ANALYSIS OUTPUT</p>
+            <h2>Chamber readings</h2>
+          </div>
+          <span class="step-number">02</span>
+        </div>
+
+        <div class="results-summary">
+          <span class="summary-check" aria-hidden="true">&#10003;</span>
+          <div>
+            <strong id="roiSummary">4 ROIs Detected</strong>
+            <span>Independent chamber predictions</span>
+          </div>
+        </div>
+
+        <div class="result-grid" id="resultGrid"></div>
+
+        <div class="processing-note">
+          <span class="pulse-line"></span>
+          <span><strong>Pipeline complete</strong><br><small>28 features extracted &middot; 23 selected</small></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="status-bar status-ready" id="statusBar" role="status" aria-live="polite">
+      <span class="status-indicator"></span>
+      <span id="statusText">Ready</span>
+    </div>
+
+    <p class="cors-note">Connects to the local FastAPI prediction server at <code>127.0.0.1:8000</code>.</p>
+  </main>
+
+  <footer class="site-footer">GlucoSense AI <span>|</span> AI-Based Colorimetric Glucose Detection</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
