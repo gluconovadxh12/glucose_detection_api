@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/predict";
+const API_URL = "https://glucose-detection-api.vercel.app/predict";
 
 const imageInput = document.getElementById("imageInput");
 const chooseButton = document.getElementById("chooseButton");
